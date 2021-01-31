@@ -10,7 +10,7 @@ class Ability
     if user.superadmin_role?
       can :manage, :all
     end
-    if user.superadmin_role?
+    if !user.superadmin_role?
       can :read, :all
       cannot :manage, User
     end
