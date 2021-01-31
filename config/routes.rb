@@ -1,4 +1,7 @@
 Rails.application.routes.draw do
+  resources :categories
+  resources :question_sets
+  resources :questions
   root 'home#index'
   get 'home/index'
 
