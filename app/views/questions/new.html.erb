@@ -1,5 +1,82 @@
-<h1>New Question</h1>
+<h1>Add Question</h1>
+<form>
+  <div>
+    <input name="question" type="text" placeholder="Enter Question" />
+  </div>
+  <div>
+    <input id="cats" name="category" type="text" placeholder="Enter Category" />
+    <div id="question-cats"></div>
+  </div>
+  <button id="add-cats" class="px-4 py-2 bg-blue-700 text-white ml-4 rounded">+</button>
+  <div>
+    <input id="choice" name="choice" type="text" placeholder="Enter Choice" />
+  </div>
+  <div id="question-choice">Click on a choice to mark it correct</div>
+  <button id="add-choice" class="px-4 py-2 bg-blue-700 text-white ml-4 rounded">+</button>
+  <button id="submit-question" class="px-20 py-2 bg-blue-700 text-white ml-4 rounded">Add Question +</button>
+</form>
 
-<%= render 'form', question: @question %>
+<script>
+let badgesObj = {
+  cats: [],
+  choice: []
+}
+let correctAns = ''
 
-<%= link_to 'Back', questions_path %>
+function sel(val) {
+  return document.querySelector(val)
+}
+
+function selAll(val) {
+  return document.querySelectorAll(val)
+}
+
+function getSiblings(elem) {
+	let siblings = [];
+	let sibling = elem.parentNode.firstChild;
+	while (sibling) {
+		if (sibling.nodeType === 1 && sibling !== elem) {
+			siblings.push(sibling);
+		}
+		sibling = sibling.nextSibling
+	}
+	return siblings;
+};
+
+function handleAnswerSelection(type) {
+  selAll('.choice-badge').length > 0 && selAll('.choice-badge').forEach(el => {
+    el.addEventListener('click', e => {
+      e.target.className = 'choice-badge rounded-3xl py-2.5 px-3.5 ml-3.5 bg-green-400 text-white'
+      correctAns = e.target.value
+      getSiblings(e.target).forEach(ell => {
+        ell.className = 'choice-badge rounded-3xl py-2.5 px-3.5 ml-3.5 bg-blue-100'
+      })
+    })
+  })
+}
+
+function badger(type) {
+  sel(`#add-${type}`).addEventListener('click', (e) => {
+    e.preventDefault()
+    let badge = document.createElement("span")
+    badge.className = `${type}-badge rounded-3xl py-2.5 px-3.5 ml-3.5 bg-blue-100`
+    let val = sel(`#${type}`).value.toLowerCase().trim()
+    badge.innerHTML = val
+    if(!badgesObj[type].includes(val) && Boolean(val)) {
+      badgesObj[type].push(val)
+      sel(`#question-${type}`).appendChild(badge)
+    }
+    sel(`#${type}`).value = ''
+    if (type === choice)
+      handleAnswerSelection(type)
+  })
+}
+
+function handleSubmit(obj) {
+
+}
+
+badger('cats')
+badger('choice')
+
+</script>

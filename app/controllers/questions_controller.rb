@@ -56,6 +56,16 @@ class QuestionsController < ApplicationController
     end
   end
 
+  def quiz
+    categories = params[:categories]
+    ids = Category.where(name: categories)&.pluck(:id)
+    questions = Question.joins(:category_questions).where('category_questions.category_id' => ids).distinct
+    categories.nil? && (
+      questions = Question.all
+    )
+    @quiz_data = questions.sample(10)
+  end
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_question

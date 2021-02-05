@@ -1,12 +1,51 @@
-<h1>Quiz</h1>
+<header class="main-header bg-blue-600 text-white flex justify-between p-4">
+  <h1 class="text-4xl cursor-pointer">
+    A <span class="text-yellow-300 font-extrabold">Quiz</span> App For All
+  </h1>
+  <div class="flex flex-col">
+    <% if current_user %>
+      <p class="text-2xl cursor-pointer hover:text-gray-100"><%= link_to "Log Out", logout_path %></p>
+    <% else %>
+      <p class="text-2xl cursor-pointer hover:text-gray-100"><%= link_to "Log In", login_path %></p>
+      <p class="text-sm cursor-pointer hover:underline"><%= link_to "Not user yet? Be one.", signup_path %></p>
+    <% end %>
+  </div>
+</header>
+<div>
 <% if current_user %>
-  Logged in as <%= current_user.email %>.
-  <%= link_to "Log Out", logout_path %>
+  <div class="flex items-center flex-col p-8">
+    <p class="text-3xl">To play the quiz, select categories and press start.</p>
+    <select class="px-24 py-2 bg-blue-100" id="categories">
+      <%= @categories.each do |category| %>
+        <option value="<%= category.name %>">
+          <%= category.name %>
+        </option>
+      <% end %>
+    </select>
+    <div id="category-badges" class="w-3/5 flex justify-center mt-4"></div>
+    <div id="start-btn" class="px-28 py-2 bg-blue-700 text-white mt-4 rounded"><%= link_to "Start", quiz_path %></div>
+  </div>
   <% if current_user.superadmin_role? %>
-    <p>Visible only for admins </p>
+    <%= link_to "Add Questions", new_question_path %>
   <% end %>
-<% else %>
-  <%= link_to "Sign Up", signup_path %> or
-  <%= link_to "Log In", login_path %>
 <% end %>
-<p id="notice"><%= notice %></p>
+
+<script>
+  let arrBadge = []
+  const badgeHolder = document.querySelector('#category-badges')
+  document.querySelector('#categories').addEventListener('change', function(e) {
+    let badge = document.createElement("span")
+    badge.innerHTML = e.target.value
+    badge.className = 'cat-badge rounded-3xl py-2.5 px-3.5 ml-3.5 bg-blue-100'
+    if (!arrBadge.includes(e.target.value))
+      document.querySelector('#category-badges').appendChild(badge)
+      arrBadge.push(e.target.value)
+  })
+  document.querySelector('#start-btn').addEventListener('click', function(e) {
+    const queryParams = arrBadge.map(a => `categories[]=${a}`).join('&')
+    fetch(`${window.location.href}/quiz?${queryParams}`)
+      .then((response) => response.json()).then((data) => {
+        console.log(data)
+      })
+  })
+</script>

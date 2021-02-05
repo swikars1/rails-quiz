@@ -5,6 +5,7 @@ Rails.application.routes.draw do
   root 'home#index'
   get 'home/index'
 
+  get 'quiz', to: 'questions#quiz', as: 'quiz'
   resources :users
   resources :sessions, only: [:new, :create, :destroy]
   get 'signup', to: 'users#new', as: 'signup'
